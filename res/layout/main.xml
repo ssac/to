@@ -86,7 +86,6 @@
         
         <LinearLayout 
             android:id="@+id/point_info"
-            android:gravity="center"
             android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="400dp"
@@ -96,19 +95,33 @@
             	android:id="@+id/point_info_title"
             	android:layout_width="match_parent"
             	android:layout_height="wrap_content"
-            	android:text="title:"
+            	android:text="Title:"
             	android:inputType="text"
             >
             </EditText>
             
             <EditText
-	        android:id="@+id/point_info_desc"
+            	android:id="@+id/point_info_title_content"
+            	android:layout_width="match_parent"
+            	android:layout_height="wrap_content"
+            	android:inputType="text"
+            >
+            </EditText>
+            
+            <EditText
+            	android:id="@+id/point_info_desc"
+            	android:layout_width="match_parent"
+            	android:layout_height="wrap_content"
+            	android:text="Description:"
+            	android:inputType="text"
+            >
+            </EditText>
+            
+            <EditText
+	        android:id="@+id/point_info_desc_content"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:text="description:"
 	        android:inputType="textMultiLine" >
-		
-	        <requestFocus />
 	    </EditText>
 		    
         </LinearLayout>
