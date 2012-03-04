@@ -85,10 +85,19 @@
         
         <LinearLayout 
             android:id="@+id/point_info"
+            android:gravity="center"
             android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="400dp"
             android:orientation="vertical" >
+            
+            <EditText
+            	android:id="@+id/point_info_title"
+            	android:layout_width="match_content"
+            	android:layout_height="wrap_content"
+            	android:inputType="text"
+            >
+            </EditText>
             
             <EditText
 		        android:id="@+id/point_info_desc"
