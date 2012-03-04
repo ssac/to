@@ -73,8 +73,8 @@
             </LinearLayout>
             
             <ListView
-                android:width="match_parent"
-                android:height="match_parent"
+                android:width="wrap_content"
+                android:height="wrap_content"
                 android:id="@+id/point_list_list" 
                 >
             </ListView>
