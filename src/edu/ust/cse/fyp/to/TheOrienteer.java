@@ -17,7 +17,9 @@
 package edu.ust.cse.fyp.to;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapActivity;
@@ -33,6 +35,11 @@ import android.view.View;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 public class TheOrienteer extends MapActivity {
 	
@@ -40,7 +47,9 @@ public class TheOrienteer extends MapActivity {
 	
 	boolean addMode = false;
 	
-	ArrayList<OverlayItem> checkpoints = new ArrayList<OverlayItem>();
+	List<Map<String, Object>> checkpoints = new ArrayList<Map<String, Object>>();
+	
+	SimpleAdapter adapter;
 
 	public class CheckpointItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 
@@ -50,7 +59,7 @@ public class TheOrienteer extends MapActivity {
 
 		@Override
 		protected OverlayItem createItem(int i) {
-			return checkpoints.get(i);
+			return (OverlayItem) checkpoints.get(i).get("overlayItem");
 		}
 
 		@Override
@@ -58,14 +67,15 @@ public class TheOrienteer extends MapActivity {
 			return checkpoints.size();
 		}
 		
-		public void add(OverlayItem overlay) {
-			checkpoints.add(overlay);
+		public void add() {
 		    populate();
 		}
 
 		@Override
 		protected boolean onTap(int index) {
-			return super.onTap(index);
+			super.onTap(index);
+			selectCheckpoint(index);						
+			return true;
 		}
 	}
 	
@@ -75,7 +85,7 @@ public class TheOrienteer extends MapActivity {
         setContentView(R.layout.main);
         
         mapView = (MapView) findViewById(R.id.mapview);
-        mapView.setBuiltInZoomControls(true);
+        //mapView.setBuiltInZoomControls(true);
         
         initOverlay();
         initButtons();
@@ -96,7 +106,14 @@ public class TheOrienteer extends MapActivity {
         	public boolean onSingleTapUp(MotionEvent event) {
 	    		List<Overlay> overlays = mapView.getOverlays();
 
-	    		overlay.add(new OverlayItem(mapView.getProjection().fromPixels((int)event.getX(), (int)event.getY()), "test", "testing"));
+	    		Map<String, Object> cp = new HashMap<String, Object>();
+	    		cp.put("title", "Checkpoint " + (overlay.size() + 1)); 
+	    		cp.put("desc", "");
+	    		cp.put("overlayItem", new OverlayItem(mapView.getProjection().fromPixels((int)event.getX(), (int)event.getY()), (String)cp.get("title"), (String)cp.get("desc")));
+	    		
+	    		checkpoints.add(cp);
+	    		overlay.add();
+	    		((ListView) TheOrienteer.this.findViewById(R.id.point_list_listview)).setAdapter(adapter);
 	    		
 	    		if(!overlays.contains(overlay)) {
 	    			overlays.add(overlay);
@@ -111,7 +128,7 @@ public class TheOrienteer extends MapActivity {
         mapView.setOnTouchListener(new OnTouchListener() {
         	
         	public boolean onTouch(View v, MotionEvent event) {
-		    	return addMode && detector.onTouchEvent(event);
+		    	return detector.onTouchEvent(event);
 			}
         });
 	}
@@ -130,6 +147,23 @@ public class TheOrienteer extends MapActivity {
 	}
 	
 	void initListView() {
+		adapter = new SimpleAdapter(this, checkpoints, R.layout.list_item, new String[] { "title", "desc" }, new int[] { R.id.item_title, R.id.item_text });
 		
+		ListView list = (ListView) TheOrienteer.this.findViewById(R.id.point_list_listview);
+		
+		list.setOnItemClickListener(new OnItemClickListener() {
+
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				selectCheckpoint(arg2);
+			}
+			
+		});
+	}
+	
+	void selectCheckpoint(int index) {
+		findViewById(R.id.point_info).setVisibility(View.VISIBLE);
+		findViewById(R.id.point_list_delete).setEnabled(true);
+		((TextView) findViewById(R.id.point_info_desc)).setText(((OverlayItem)checkpoints.get(index).get("overlayItem")).getPoint().toString());
 	}
 }
