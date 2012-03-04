@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal" >
+    android:orientation="horizontal" >
+
     <LinearLayout
         android:id="@+id/map"
         android:layout_width="880dp"
@@ -18,7 +19,8 @@
 	        android:apiKey="@string/maps_api_key"
 	    />
         
-    </LinearLayout>
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/controller"
         android:layout_width="400dp"
@@ -48,20 +50,34 @@
             android:layout_height="300dp"
             android:orientation="horizontal" >
                 
-            <Button
-                android:id="@+id/point_list_add"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/point_list_add" />
+                android:id="@id/point_list_buttons" >
+                
+                <Button
+                	android:id="@+id/point_list_add"
+	                android:layout_gravity="center_horizontal"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:text="@string/point_list_add" />
+	            
+	            <Button
+	                android:id="@+id/point_list_delete"
+	                android:clickable="false"
+	                android:layout_gravity="center_horizontal"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:text="@string/point_list_delete" />
+                
+            </LinearLayout>
             
-            <Button
-                android:id="@+id/point_list_delete"
-                android:clickable="false"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/point_list_delete" />
+            <ListView
+                android:width="match_parent"
+                android:height="match_parent"
+                android:id="@+id/point_list_list" 
+                >
+            </ListView>
             
         </LinearLayout>
         
