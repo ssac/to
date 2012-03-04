@@ -93,7 +93,7 @@
             
             <EditText
             	android:id="@+id/point_info_title"
-            	android:layout_width="match_content"
+            	android:layout_width="match_parent"
             	android:layout_height="wrap_content"
             	android:inputType="text"
             >
