@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
+    <LinearLayout
+        android:id="@+id/map"
+        android:layout_width="880dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+        
+        <com.google.android.maps.MapView
+	        android:id="@+id/mapview"
+	        android:layout_width="match_parent" 
+	        android:layout_height="match_parent"
+	        android:enabled="true"
+	        android:clickable="true"
+	        android:apiKey="@string/maps_api_key"
+	    />
+        
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/controller"
+        android:layout_width="400dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+        
+        <LinearLayout
+            android:id="@+id/timer"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="horizontal" >
+            
+            <EditText
+		        android:id="@+id/timer_timer"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:inputType="time" >
+		
+		        <requestFocus />
+		    </EditText>
+            
+        </LinearLayout>
+        
+        <LinearLayout 
+            android:id="@+id/point_list"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:orientation="horizontal" >
+                
+            <Button
+                android:id="@+id/point_list_add"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/point_list_add" />
+            
+            <Button
+                android:id="@+id/point_list_delete"
+                android:clickable="false"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/point_list_delete" />
+            
+        </LinearLayout>
+        
+        <LinearLayout 
+            android:id="@+id/point_info"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:orientation="vertical" >
+            
+            <EditText
+		        android:id="@+id/point_info_desc"
+		        android:layout_width="0dip"
+		        android:layout_height="match_parent"
+		        android:inputType="textMultiLine" >
+		
+		        <requestFocus />
+		    </EditText>
+		    
+        </LinearLayout>
+
+    </LinearLayout>
+    
+</LinearLayout>
