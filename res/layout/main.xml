@@ -73,9 +73,9 @@
             </LinearLayout>
             
             <ListView
-                android:width="wrap_content"
-                android:height="wrap_content"
-                android:id="@+id/point_list_list" 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/point_list_listview" 
                 >
             </ListView>
             
