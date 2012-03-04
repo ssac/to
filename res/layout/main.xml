@@ -53,7 +53,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@id/point_list_buttons" >
+                android:id="@+id/point_list_buttons" >
                 
                 <Button
                 	android:id="@+id/point_list_add"
