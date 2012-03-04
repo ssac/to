@@ -48,7 +48,7 @@
             android:id="@+id/point_list"
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:orientation="horizontal" >
+            android:orientation="vertical" >
                 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -89,7 +89,7 @@
             
             <EditText
 		        android:id="@+id/point_info_desc"
-		        android:layout_width="0dip"
+		        android:layout_width="wrap_content"
 		        android:layout_height="match_parent"
 		        android:inputType="textMultiLine" >
 		
