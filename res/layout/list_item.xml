@@ -27,7 +27,7 @@
     <TextView   
         android:text="TextView02"   
         android:layout_height="wrap_content"   
-        android:layout_width="matach_parent"   
+        android:layout_width="match_parent"   
         android:layout_below="@+id/item_title"   
         android:id="@+id/item_text"  
         />  
