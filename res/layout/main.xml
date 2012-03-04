@@ -95,20 +95,22 @@
             
             <EditText
             	android:id="@+id/point_info_title"
-            	android:layout_width="wrap_content"
-            	android:layout_height="wrap_content"
+            	android:layout_width="match_parent"
+            	android:layout_height="match_parent"
+            	android:text="title:"
             	android:inputType="text"
             >
             </EditText>
             
             <EditText
-		        android:id="@+id/point_info_desc"
-		        android:layout_width="wrap_content"
-		        android:layout_height="match_parent"
-		        android:inputType="textMultiLine" >
+	        android:id="@+id/point_info_desc"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:text="description:"
+	        android:inputType="textMultiLine" >
 		
-		        <requestFocus />
-		    </EditText>
+	        <requestFocus />
+	    </EditText>
 		    
         </LinearLayout>
 
