@@ -33,14 +33,12 @@
             android:layout_height="100dp"
             android:orientation="horizontal" >
             
-            <EditText
-	        android:id="@+id/timer_timer"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:inputType="time" >
-	
-	        <requestFocus />
-	    </EditText>
+            <TextView
+		        android:id="@+id/timer_timer"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:inputType="text" >
+	   		</TextView>
             
         </LinearLayout>
         
@@ -72,6 +70,14 @@
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
 	                android:text="@string/point_list_delete" />
+	               
+                <Button
+                	android:id="@+id/point_list_save"
+                	android:visibility="gone"
+                	android:layout_gravity="end"
+                	android:layout_width="wrap_content"
+                	android:layout_height="wrap_content"
+                	android:text="@string/point_list_save" />
             
             </LinearLayout>
             
@@ -97,7 +103,7 @@
             	android:layout_height="wrap_content"
             	android:text="Title:"
             	android:inputType="text"
-            >
+            	>
             </EditText>
             
             <EditText
@@ -105,24 +111,42 @@
             	android:layout_width="match_parent"
             	android:layout_height="wrap_content"
             	android:inputType="text"
-            >
+            	>
             </EditText>
             
             <EditText
+            	android:id="@+id/point_info_coordinate"
+            	android:layout_width="match_parent"
+            	android:layout_height="wrap_content"
+            	android:text="Coordinate:"
+            	android:inputType="text"
+            	>
+            </EditText>
+            
+            <EditText
+		        android:id="@+id/point_info_coordinate_content"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:inputType="text" 
+		        >
+		    </EditText>
+		    
+		    <EditText
             	android:id="@+id/point_info_desc"
             	android:layout_width="match_parent"
             	android:layout_height="wrap_content"
             	android:text="Description:"
             	android:inputType="text"
-            >
+            	>
             </EditText>
             
             <EditText
-	        android:id="@+id/point_info_desc_content"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:inputType="textMultiLine" >
-	    </EditText>
+		        android:id="@+id/point_info_desc_content"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:inputType="textMultiLine" 
+		        >
+		    </EditText>
 		    
         </LinearLayout>
 
