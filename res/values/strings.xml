@@ -18,6 +18,7 @@
     <string name="point_list_edit">Edit</string>
     <string name="point_list_add">Add</string>
     <string name="point_list_delete">Delete</string>
+    <string name="point_list_save">Save</string>
     <string name="app_name">The Orienteer</string>
 </resources>
 
