@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -34,7 +35,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -67,8 +67,10 @@ public class TheOrienteer extends MapActivity {
 			return checkpoints.size();
 		}
 		
-		public void add() {
+		public void update() {
 		    populate();
+		    setLastFocusedIndex(-1);
+		    mapView.invalidate();
 		}
 
 		@Override
@@ -85,7 +87,9 @@ public class TheOrienteer extends MapActivity {
         setContentView(R.layout.main);
         
         mapView = (MapView) findViewById(R.id.mapview);
-        //mapView.setBuiltInZoomControls(true);
+        mapView.setBuiltInZoomControls(true);
+        mapView.getController().setCenter(new GeoPoint(22337505,114262968));
+        mapView.getController().setZoom(18);
         
         initOverlay();
         initButtons();
@@ -97,8 +101,10 @@ public class TheOrienteer extends MapActivity {
 		return false;
 	}
 	
+	CheckpointItemizedOverlay overlay;
+	int uid = 0;
 	void initOverlay() {
-		final CheckpointItemizedOverlay overlay = new CheckpointItemizedOverlay(this.getResources().getDrawable(R.drawable.androidmarker));
+		overlay = new CheckpointItemizedOverlay(this.getResources().getDrawable(R.drawable.androidmarker));
         
         final GestureDetector detector = new GestureDetector(this, new SimpleOnGestureListener() {
         	
@@ -107,13 +113,13 @@ public class TheOrienteer extends MapActivity {
 	    		List<Overlay> overlays = mapView.getOverlays();
 
 	    		Map<String, Object> cp = new HashMap<String, Object>();
-	    		cp.put("title", "Checkpoint " + (overlay.size() + 1)); 
+	    		cp.put("title", "Checkpoint " + ++uid); 
 	    		cp.put("desc", "");
 	    		cp.put("overlayItem", new OverlayItem(mapView.getProjection().fromPixels((int)event.getX(), (int)event.getY()), (String)cp.get("title"), (String)cp.get("desc")));
 	    		
 	    		checkpoints.add(cp);
-	    		overlay.add();
-	    		((ListView) TheOrienteer.this.findViewById(R.id.point_list_listview)).setAdapter(adapter);
+	    		overlay.update();
+	    		list.setAdapter(adapter);
 	    		
 	    		if(!overlays.contains(overlay)) {
 	    			overlays.add(overlay);
@@ -125,31 +131,68 @@ public class TheOrienteer extends MapActivity {
         	}
         });
         
-        mapView.setOnTouchListener(new OnTouchListener() {
-        	
-        	public boolean onTouch(View v, MotionEvent event) {
-		    	return detector.onTouchEvent(event);
+        mapView.getOverlays().add(new Overlay() {
+
+			@Override
+			public boolean onTouchEvent(MotionEvent e, MapView mapView) {
+				if(addMode) {
+					detector.onTouchEvent(e);
+				}
+				
+				return super.onTouchEvent(e, mapView);
 			}
+        	
         });
 	}
 	
 	void initButtons() {
+        final View buttons = findViewById(R.id.point_list_buttons);
         final View addButton = findViewById(R.id.point_list_add);
         final View deleteButton = findViewById(R.id.point_list_delete);
+        final View saveButton = findViewById(R.id.point_list_save);
         
         addButton.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 				addMode = true;
+				buttons.setVisibility(View.INVISIBLE);
+			}
+        });
+        
+        deleteButton.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				checkpoints.remove(selectedIndex);
+				overlay.update();
+				list.setAdapter(adapter);
+				findViewById(R.id.point_info).setVisibility(View.INVISIBLE);
+				buttons.setVisibility(View.VISIBLE);
+				addButton.setVisibility(View.VISIBLE);
 				deleteButton.setVisibility(View.GONE);
+				saveButton.setVisibility(View.GONE);
+			}
+        });
+        
+        saveButton.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				Map<String, Object> item = checkpoints.get(selectedIndex);
+				
+				item.put("title", ((TextView) findViewById(R.id.point_info_title_content)).getText());
+				item.put("desc", ((TextView) findViewById(R.id.point_info_desc_content)).getText());
 			}
         });
 	}
 	
+	void addButtonOnly() {
+	}
+	
+	ListView list;
+	
 	void initListView() {
 		adapter = new SimpleAdapter(this, checkpoints, R.layout.list_item, new String[] { "title", "desc" }, new int[] { R.id.item_title, R.id.item_text });
 		
-		ListView list = (ListView) TheOrienteer.this.findViewById(R.id.point_list_listview);
+		list = (ListView) findViewById(R.id.point_list_listview);
 		
 		list.setOnItemClickListener(new OnItemClickListener() {
 
@@ -161,9 +204,20 @@ public class TheOrienteer extends MapActivity {
 		});
 	}
 	
+	int selectedIndex;
 	void selectCheckpoint(int index) {
+		selectedIndex = index;
 		findViewById(R.id.point_info).setVisibility(View.VISIBLE);
-		findViewById(R.id.point_list_delete).setEnabled(true);
-		((TextView) findViewById(R.id.point_info_desc)).setText(((OverlayItem)checkpoints.get(index).get("overlayItem")).getPoint().toString());
+		findViewById(R.id.point_list_buttons).setVisibility(View.VISIBLE);
+		findViewById(R.id.point_list_add).setVisibility(View.VISIBLE);
+		findViewById(R.id.point_list_delete).setVisibility(View.VISIBLE);
+		findViewById(R.id.point_list_save).setVisibility(View.VISIBLE);
+		
+		Map<String, Object> item = checkpoints.get(index);
+		GeoPoint point = ((OverlayItem)item.get("overlayItem")).getPoint();
+
+		((TextView) findViewById(R.id.point_info_title_content)).setText((String)item.get("title"));
+		((TextView) findViewById(R.id.point_info_coordinate_content)).setText(point.getLatitudeE6() + ", " + point.getLongitudeE6());
+		((TextView) findViewById(R.id.point_info_desc_content)).setText((String)item.get("desc"));
 	}
 }
