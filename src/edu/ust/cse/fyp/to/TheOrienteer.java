@@ -165,6 +165,7 @@ public class TheOrienteer extends MapActivity {
 				checkpoints.remove(selectedIndex);
 				overlay.update();
 				list.setAdapter(adapter);
+				
 				findViewById(R.id.point_info).setVisibility(View.INVISIBLE);
 				buttons.setVisibility(View.VISIBLE);
 				addButton.setVisibility(View.VISIBLE);
@@ -178,19 +179,18 @@ public class TheOrienteer extends MapActivity {
 			public void onClick(View v) {
 				Map<String, Object> item = checkpoints.get(selectedIndex);
 				
-				item.put("title", ((TextView) findViewById(R.id.point_info_title_content)).getText());
-				item.put("desc", ((TextView) findViewById(R.id.point_info_desc_content)).getText());
+				item.put("title", ((TextView) findViewById(R.id.point_info_title_content)).getText().toString());
+				item.put("desc", ((TextView) findViewById(R.id.point_info_desc_content)).getText().toString());
+				
+				list.setAdapter(adapter);
 			}
         });
-	}
-	
-	void addButtonOnly() {
 	}
 	
 	ListView list;
 	
 	void initListView() {
-		adapter = new SimpleAdapter(this, checkpoints, R.layout.list_item, new String[] { "title", "desc" }, new int[] { R.id.item_title, R.id.item_text });
+		adapter = new SimpleAdapter(this, checkpoints, R.layout.list_item, new String[] { "title" }, new int[] { R.id.item_title });
 		
 		list = (ListView) findViewById(R.id.point_list_listview);
 		

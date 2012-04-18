@@ -17,7 +17,6 @@
         />   
         
     <TextView   
-        android:text="TextView01"   
         android:layout_height="wrap_content"   
         android:textSize="20dip"   
         android:layout_width="match_parent"   
@@ -25,7 +24,6 @@
         />  
         
     <TextView   
-        android:text="TextView02"   
         android:layout_height="wrap_content"   
         android:layout_width="match_parent"   
         android:layout_below="@+id/item_title"   
