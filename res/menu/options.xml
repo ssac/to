@@ -1,0 +1,17 @@
+
+    <menu xmlns:android="http://schemas.android.com/apk/res/android">
+        <group android:id="@+id/user_group">
+        	<item android:id="@+id/checkin" android:title="@string/checkin" android:showAsAction="always"></item>
+        	<item android:id="@+id/review" android:title="@string/review" android:showAsAction="always"></item>
+        	<item android:id="@+id/admin_mode" android:title="@string/admin_mode"></item>
+        </group>
+        <group android:id="@+id/admin_group" android:visible="false">
+       		<item android:id="@+id/add" android:title="@string/add" android:showAsAction="always"></item>
+       		<item android:id="@+id/OK" android:title="@string/OK" android:showAsAction="always" android:visible="false"></item>
+       		<item android:id="@+id/cancel" android:title="@string/cancel" android:showAsAction="always" android:visible="false"></item>
+       		<item android:id="@+id/remove" android:title="@string/remove" android:showAsAction="always" android:visible="false"></item>
+        	<item android:id="@+id/user_mode" android:title="@string/user_mode"></item>
+        	<item android:id="@+id/cfg_import" android:title="@string/cfg_import"></item>
+        	<item android:id="@+id/cfg_export" android:title="@string/cfg_export"></item>
+        </group>
+    </menu>

@@ -28,9 +28,15 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -42,19 +48,44 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 public class TheOrienteer extends MapActivity {
-	
-	MapView mapView;
-	
-	boolean addMode = false;
-	
-	List<Map<String, Object>> checkpoints = new ArrayList<Map<String, Object>>();
-	
-	SimpleAdapter adapter;
 
-	public class CheckpointItemizedOverlay extends ItemizedOverlay<OverlayItem> {
+	int uid = 0;
+	boolean addMode = false;
+	List<Map<String, Object>> checkpoints = new ArrayList<Map<String, Object>>();
+	MapView mapView;
+	CheckpointItemizedOverlay overlay;
+	SimpleAdapter adapter;
+	ListView list;
+	Menu options;
+	
+	enum MenuMode {
+		ADDMODE, SELECTED, DESELECTED
+	}
+	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+
+        mapView = (MapView) findViewById(R.id.mapview);
+        mapView.setBuiltInZoomControls(true);
+        mapView.getController().setCenter(new GeoPoint(22337505,114262968));
+        mapView.getController().setZoom(18);
+        
+        initOverlay();
+        initListView();
+    }
+
+	@Override
+	protected boolean isRouteDisplayed() {
+		return false;
+	}
+	
+	class CheckpointItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 
 		public CheckpointItemizedOverlay(Drawable defaultMarker) {
-			super(boundCenterBottom(defaultMarker));
+			super(defaultMarker);
+			//super(boundCenterBottom(defaultMarker));
 		}
 
 		@Override
@@ -81,28 +112,6 @@ public class TheOrienteer extends MapActivity {
 		}
 	}
 	
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        
-        mapView = (MapView) findViewById(R.id.mapview);
-        mapView.setBuiltInZoomControls(true);
-        mapView.getController().setCenter(new GeoPoint(22337505,114262968));
-        mapView.getController().setZoom(18);
-        
-        initOverlay();
-        initButtons();
-        initListView();
-    }
-
-	@Override
-	protected boolean isRouteDisplayed() {
-		return false;
-	}
-	
-	CheckpointItemizedOverlay overlay;
-	int uid = 0;
 	void initOverlay() {
 		overlay = new CheckpointItemizedOverlay(this.getResources().getDrawable(R.drawable.androidmarker));
         
@@ -125,7 +134,7 @@ public class TheOrienteer extends MapActivity {
 	    			overlays.add(overlay);
 	    		}
 	    		
-	    		addMode = false;
+	    		setMenuMode(MenuMode.SELECTED);
 	    		
 	    		return false;
         	}
@@ -141,77 +150,82 @@ public class TheOrienteer extends MapActivity {
 				
 				return super.onTouchEvent(e, mapView);
 			}
-        	
         });
 	}
-	
-	void initButtons() {
-        final View buttons = findViewById(R.id.point_list_buttons);
-        final View addButton = findViewById(R.id.point_list_add);
-        final View deleteButton = findViewById(R.id.point_list_delete);
-        final View saveButton = findViewById(R.id.point_list_save);
-        
-        addButton.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-				addMode = true;
-				buttons.setVisibility(View.INVISIBLE);
-			}
-        });
-        
-        deleteButton.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-				checkpoints.remove(selectedIndex);
-				overlay.update();
-				list.setAdapter(adapter);
-				
-				findViewById(R.id.point_info).setVisibility(View.INVISIBLE);
-				buttons.setVisibility(View.VISIBLE);
-				addButton.setVisibility(View.VISIBLE);
-				deleteButton.setVisibility(View.GONE);
-				saveButton.setVisibility(View.GONE);
-			}
-        });
-        
-        saveButton.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-				Map<String, Object> item = checkpoints.get(selectedIndex);
-				
-				item.put("title", ((TextView) findViewById(R.id.point_info_title_content)).getText().toString());
-				item.put("desc", ((TextView) findViewById(R.id.point_info_desc_content)).getText().toString());
-				
-				list.setAdapter(adapter);
-			}
-        });
-	}
-	
-	ListView list;
 	
 	void initListView() {
 		adapter = new SimpleAdapter(this, checkpoints, R.layout.list_item, new String[] { "title" }, new int[] { R.id.item_title });
-		
 		list = (ListView) findViewById(R.id.point_list_listview);
 		
 		list.setOnItemClickListener(new OnItemClickListener() {
-
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				selectCheckpoint(arg2);
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				selectCheckpoint(position);
 			}
-			
 		});
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.options, menu);
+	    options = menu;
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.admin_mode:
+	        	options.setGroupVisible(R.id.admin_group, true);
+	        	options.setGroupVisible(R.id.user_group, false);
+	        	setMenuMode(MenuMode.DESELECTED);
+	            return true;
+	        case R.id.user_mode:
+	        	options.setGroupVisible(R.id.admin_group, false);
+	        	options.setGroupVisible(R.id.user_group, true);
+	            return true;
+	        case R.id.add:
+	        	setMenuMode(MenuMode.ADDMODE);
+	            return true;
+	        case R.id.OK:
+				Map<String, Object> cpInfo = checkpoints.get(selectedIndex);
+				
+				cpInfo.put("title", ((TextView) findViewById(R.id.point_info_title_content)).getText().toString());
+				cpInfo.put("desc", ((TextView) findViewById(R.id.point_info_desc_content)).getText().toString());
+				
+				list.setAdapter(adapter);
+				list.setSelection(-1);
+				setMenuMode(MenuMode.DESELECTED);
+	            return true;
+	        case R.id.cancel:
+				list.setSelection(-1);
+	        	setMenuMode(MenuMode.DESELECTED);
+	            return true;
+	        case R.id.remove:
+				checkpoints.remove(selectedIndex);
+				overlay.update();
+				list.setAdapter(adapter);
+				list.setSelection(-1);
+				setMenuMode(MenuMode.DESELECTED);
+	            return true;
+	        case R.id.checkin:
+	            return true;
+	        case R.id.review:
+	            return true;
+	        case R.id.cfg_import:
+	            return true;
+	        case R.id.cfg_export:
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
 	}
 	
 	int selectedIndex;
 	void selectCheckpoint(int index) {
 		selectedIndex = index;
-		findViewById(R.id.point_info).setVisibility(View.VISIBLE);
-		findViewById(R.id.point_list_buttons).setVisibility(View.VISIBLE);
-		findViewById(R.id.point_list_add).setVisibility(View.VISIBLE);
-		findViewById(R.id.point_list_delete).setVisibility(View.VISIBLE);
-		findViewById(R.id.point_list_save).setVisibility(View.VISIBLE);
+		list.setSelection(index);
 		
 		Map<String, Object> item = checkpoints.get(index);
 		GeoPoint point = ((OverlayItem)item.get("overlayItem")).getPoint();
@@ -219,5 +233,26 @@ public class TheOrienteer extends MapActivity {
 		((TextView) findViewById(R.id.point_info_title_content)).setText((String)item.get("title"));
 		((TextView) findViewById(R.id.point_info_coordinate_content)).setText(point.getLatitudeE6() + ", " + point.getLongitudeE6());
 		((TextView) findViewById(R.id.point_info_desc_content)).setText((String)item.get("desc"));
+		
+		setMenuMode(MenuMode.SELECTED);
+	}
+	
+	void setMenuMode(MenuMode mode) {
+		addMode = mode == MenuMode.ADDMODE;
+		findViewById(R.id.point_info).setVisibility(mode == MenuMode.SELECTED  ? View.VISIBLE : View.INVISIBLE);
+		options.findItem(R.id.add).setVisible(mode == MenuMode.DESELECTED);
+		options.findItem(R.id.OK).setVisible(mode == MenuMode.SELECTED);
+		options.findItem(R.id.cancel).setVisible(mode != MenuMode.DESELECTED);
+		options.findItem(R.id.remove).setVisible(mode == MenuMode.SELECTED);
+	}
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		
+		builder.setTitle("Review");
+		builder.setMessage("00:00:00   -   Start\n\n00:03:30   -   Control Point 1\n\n00:08:24   -   Control Point 2\n\n00:11:49   -   Control Point 3\n\n00:15:33   -   End");
+		
+		return builder.create();
 	}
 }
