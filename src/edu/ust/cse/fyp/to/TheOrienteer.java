@@ -17,6 +17,7 @@
 package edu.ust.cse.fyp.to;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,6 @@ import com.google.android.maps.OverlayItem;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.GestureDetector;
@@ -40,7 +40,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.SimpleOnGestureListener;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -59,7 +58,7 @@ public class TheOrienteer extends MapActivity {
 	Menu options;
 	
 	enum MenuMode {
-		ADDMODE, SELECTED, DESELECTED
+		STOPPED, STARTED, ADDMODE, SELECTED, DESELECTED
 	}
 	
     @Override
@@ -84,7 +83,7 @@ public class TheOrienteer extends MapActivity {
 	class CheckpointItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 
 		public CheckpointItemizedOverlay(Drawable defaultMarker) {
-			super(defaultMarker);
+			super(boundCenter(defaultMarker));
 			//super(boundCenterBottom(defaultMarker));
 		}
 
@@ -195,19 +194,20 @@ public class TheOrienteer extends MapActivity {
 				cpInfo.put("desc", ((TextView) findViewById(R.id.point_info_desc_content)).getText().toString());
 				
 				list.setAdapter(adapter);
-				list.setSelection(-1);
 				setMenuMode(MenuMode.DESELECTED);
 	            return true;
 	        case R.id.cancel:
-				list.setSelection(-1);
+				list.setAdapter(adapter);
 	        	setMenuMode(MenuMode.DESELECTED);
 	            return true;
 	        case R.id.remove:
 				checkpoints.remove(selectedIndex);
 				overlay.update();
 				list.setAdapter(adapter);
-				list.setSelection(-1);
 				setMenuMode(MenuMode.DESELECTED);
+	            return true;
+	        case R.id.start:
+				setMenuMode(MenuMode.STARTED);
 	            return true;
 	        case R.id.checkin:
 	            return true;
@@ -225,7 +225,7 @@ public class TheOrienteer extends MapActivity {
 	int selectedIndex;
 	void selectCheckpoint(int index) {
 		selectedIndex = index;
-		list.setSelection(index);
+		list.setItemChecked(index, true);
 		
 		Map<String, Object> item = checkpoints.get(index);
 		GeoPoint point = ((OverlayItem)item.get("overlayItem")).getPoint();
@@ -238,12 +238,25 @@ public class TheOrienteer extends MapActivity {
 	}
 	
 	void setMenuMode(MenuMode mode) {
-		addMode = mode == MenuMode.ADDMODE;
-		findViewById(R.id.point_info).setVisibility(mode == MenuMode.SELECTED  ? View.VISIBLE : View.INVISIBLE);
-		options.findItem(R.id.add).setVisible(mode == MenuMode.DESELECTED);
-		options.findItem(R.id.OK).setVisible(mode == MenuMode.SELECTED);
-		options.findItem(R.id.cancel).setVisible(mode != MenuMode.DESELECTED);
-		options.findItem(R.id.remove).setVisible(mode == MenuMode.SELECTED);
+		findViewById(R.id.point_info).setVisibility(EnumSet.of(MenuMode.DESELECTED, MenuMode.ADDMODE).contains(mode) ? View.INVISIBLE : View.VISIBLE);
+		
+		boolean isUserMode = EnumSet.of(MenuMode.STOPPED, MenuMode.STARTED).contains(mode);
+		
+    	options.setGroupVisible(R.id.admin_group, !isUserMode);
+    	options.setGroupVisible(R.id.user_group, isUserMode);
+    	
+    	if(isUserMode) {
+    		options.findItem(R.id.start).setVisible(mode == MenuMode.STOPPED);
+    		options.findItem(R.id.checkin).setVisible(mode == MenuMode.STARTED);
+    		options.findItem(R.id.review).setVisible(mode == MenuMode.STARTED);
+    	}
+    	else {
+    		addMode = mode == MenuMode.ADDMODE;
+    		options.findItem(R.id.add).setVisible(mode == MenuMode.DESELECTED);
+    		options.findItem(R.id.OK).setVisible(mode == MenuMode.SELECTED);
+    		options.findItem(R.id.cancel).setVisible(mode != MenuMode.DESELECTED);
+    		options.findItem(R.id.remove).setVisible(mode == MenuMode.SELECTED);
+    	}
 	}
 
 	@Override

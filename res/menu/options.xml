@@ -1,8 +1,9 @@
 
     <menu xmlns:android="http://schemas.android.com/apk/res/android">
         <group android:id="@+id/user_group">
-        	<item android:id="@+id/checkin" android:title="@string/checkin" android:showAsAction="always"></item>
-        	<item android:id="@+id/review" android:title="@string/review" android:showAsAction="always"></item>
+        	<item android:id="@+id/start" android:title="@string/start" android:showAsAction="always"></item>
+        	<item android:id="@+id/checkin" android:title="@string/checkin" android:showAsAction="always" android:visible="false"></item>
+        	<item android:id="@+id/review" android:title="@string/review" android:showAsAction="always" android:visible="false"></item>
         	<item android:id="@+id/admin_mode" android:title="@string/admin_mode"></item>
         </group>
         <group android:id="@+id/admin_group" android:visible="false">
