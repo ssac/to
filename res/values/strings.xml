@@ -20,5 +20,12 @@
     <string name="point_list_delete">Delete</string>
     <string name="point_list_save">Save</string>
     <string name="app_name">The Orienteer</string>
+    <string name="point_info_title">Title:</string>
+    <string name="point_info_coordinate">Coordinate:</string>
+    <string name="point_info_desc">Description:</string>
+    <string name="timer_default_time">00:00</string>
+    
+    <string name="import_export_import">Import</string>
+    <string name="import_export_export">Export</string>
 </resources>
 

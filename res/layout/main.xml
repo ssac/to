@@ -2,19 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal" >
-
+    android:orientation="horizontal"
+    >
+  
     <LinearLayout
         android:id="@+id/map"
         android:layout_width="880dp"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical" 
+        android:paddingRight="5dp"
+        >
         
         <com.google.android.maps.MapView
 	        android:id="@+id/mapview"
 	        android:layout_width="match_parent" 
 	        android:layout_height="match_parent"
-	        android:enabled="true"
+	        android:state_enabled="true"
 	        android:clickable="true"
 	        android:apiKey="@string/maps_api_key"
 	    />
@@ -22,31 +25,39 @@
     </LinearLayout>
 
     <LinearLayout
+        android:paddingLeft="2dp"
         android:id="@+id/controller"
         android:layout_width="400dp"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical" 
+        >
         
         <LinearLayout
-            android:id="@+id/timer"
+            android:id="@+id/import_export"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:orientation="horizontal" >
+            android:layout_height="60dp"
+            android:orientation="horizontal"
+            android:background="@drawable/the_border"
+            >
             
             <TextView
-		        android:id="@+id/timer_timer"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:inputType="text" >
-	   		</TextView>
+            	android:id="@+id/point_info_title"
+            	android:textSize="35sp"
+            	android:layout_width="match_parent"
+            	android:layout_height="wrap_content"
+            	android:text="00:12"
+            	>
+            </TextView>
             
         </LinearLayout>
         
         <LinearLayout 
             android:id="@+id/point_list"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:orientation="vertical" >
+            android:layout_height="400dp"
+            android:orientation="vertical" 
+            android:background="@drawable/the_border"
+            >
                 
             <LinearLayout
             	android:id="@+id/point_list_buttons"
@@ -61,9 +72,9 @@
 	                android:layout_gravity="center_horizontal"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
-	                android:text="@string/point_list_add" />
-	            
-	            <Button
+	                android:text="Check In" />
+            	
+            	<Button
 	                android:id="@+id/point_list_delete"
 	                android:visibility="gone"
 	                android:layout_gravity="center_horizontal"
@@ -94,16 +105,17 @@
             android:id="@+id/point_info"
             android:visibility="invisible"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:orientation="vertical" >
+            android:layout_height="235dp"
+            android:orientation="vertical" 
+            android:background="@drawable/the_border"
+            >
             
             <TextView
             	android:id="@+id/point_info_title"
             	android:textSize="15sp"
             	android:layout_width="match_parent"
             	android:layout_height="wrap_content"
-            	android:text="Title:"
-            	android:inputType="text"
+            	android:text="@string/point_info_title"
             	>
             </TextView>
             
@@ -112,7 +124,7 @@
             	android:textSize="15sp"
             	android:layout_width="match_parent"
             	android:layout_height="wrap_content"
-            	android:inputType="text"
+            	android:paddingLeft="10dp"
             	>
             </TextView>
             
@@ -121,8 +133,7 @@
             	android:textSize="15sp"
             	android:layout_width="match_parent"
             	android:layout_height="wrap_content"
-            	android:text="Coordinate:"
-            	android:inputType="text"
+            	android:text="@string/point_info_coordinate"
             	>
             </TextView>
             
@@ -131,7 +142,7 @@
 		        android:textSize="15sp"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
-		        android:inputType="text" 
+		        android:paddingLeft="10dp"
 		        >
 		    </TextView>
 		    
@@ -140,8 +151,7 @@
             	android:textSize="15sp"
             	android:layout_width="match_parent"
             	android:layout_height="wrap_content"
-            	android:text="Description:"
-            	android:inputType="text"
+            	android:text="@string/point_info_desc"
             	>
             </TextView>
             
