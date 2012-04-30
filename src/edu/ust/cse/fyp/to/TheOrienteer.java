@@ -58,7 +58,7 @@ public class TheOrienteer extends MapActivity {
 	Menu options;
 	
 	enum MenuMode {
-		STOPPED, STARTED, ADDMODE, SELECTED, DESELECTED
+		STOPPED, STARTED, ADDMODE, ADDED, SELECTED, DESELECTED
 	}
 	
     @Override
@@ -84,7 +84,6 @@ public class TheOrienteer extends MapActivity {
 
 		public CheckpointItemizedOverlay(Drawable defaultMarker) {
 			super(boundCenter(defaultMarker));
-			//super(boundCenterBottom(defaultMarker));
 		}
 
 		@Override
@@ -133,7 +132,7 @@ public class TheOrienteer extends MapActivity {
 	    			overlays.add(overlay);
 	    		}
 	    		
-	    		setMenuMode(MenuMode.SELECTED);
+	    		setMenuMode(MenuMode.ADDED);
 	    		
 	    		return false;
         	}
@@ -154,7 +153,7 @@ public class TheOrienteer extends MapActivity {
 	
 	void initListView() {
 		adapter = new SimpleAdapter(this, checkpoints, R.layout.list_item, new String[] { "title" }, new int[] { R.id.item_title });
-		list = (ListView) findViewById(R.id.point_list_listview);
+		list = (ListView) findViewById(R.id.point_list);
 		
 		list.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -176,13 +175,10 @@ public class TheOrienteer extends MapActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	        case R.id.admin_mode:
-	        	options.setGroupVisible(R.id.admin_group, true);
-	        	options.setGroupVisible(R.id.user_group, false);
 	        	setMenuMode(MenuMode.DESELECTED);
 	            return true;
 	        case R.id.user_mode:
-	        	options.setGroupVisible(R.id.admin_group, false);
-	        	options.setGroupVisible(R.id.user_group, true);
+	        	setMenuMode(MenuMode.STOPPED);
 	            return true;
 	        case R.id.add:
 	        	setMenuMode(MenuMode.ADDMODE);
@@ -190,8 +186,8 @@ public class TheOrienteer extends MapActivity {
 	        case R.id.OK:
 				Map<String, Object> cpInfo = checkpoints.get(selectedIndex);
 				
-				cpInfo.put("title", ((TextView) findViewById(R.id.point_info_title_content)).getText().toString());
-				cpInfo.put("desc", ((TextView) findViewById(R.id.point_info_desc_content)).getText().toString());
+				cpInfo.put("title", ((TextView) findViewById(R.id.point_info_title)).getText().toString());
+				cpInfo.put("desc", ((TextView) findViewById(R.id.point_info_desc)).getText().toString());
 				
 				list.setAdapter(adapter);
 				setMenuMode(MenuMode.DESELECTED);
@@ -199,6 +195,17 @@ public class TheOrienteer extends MapActivity {
 	        case R.id.cancel:
 				list.setAdapter(adapter);
 	        	setMenuMode(MenuMode.DESELECTED);
+	            return true;
+	        case R.id.up:
+	        	if(selectedIndex == 0) return true;
+	        case R.id.down:
+	        	if(item.getItemId() == R.id.down && selectedIndex == checkpoints.size() - 1) return true;
+	        	
+	        	Map<String, Object> cp = checkpoints.remove(selectedIndex);
+	        	selectedIndex = item.getItemId() == R.id.up ? selectedIndex - 1 : selectedIndex + 1;
+	        	checkpoints.add(selectedIndex, cp);
+				list.setAdapter(adapter);
+				selectCheckpoint(selectedIndex);
 	            return true;
 	        case R.id.remove:
 				checkpoints.remove(selectedIndex);
@@ -230,9 +237,8 @@ public class TheOrienteer extends MapActivity {
 		Map<String, Object> item = checkpoints.get(index);
 		GeoPoint point = ((OverlayItem)item.get("overlayItem")).getPoint();
 
-		((TextView) findViewById(R.id.point_info_title_content)).setText((String)item.get("title"));
-		((TextView) findViewById(R.id.point_info_coordinate_content)).setText(point.getLatitudeE6() + ", " + point.getLongitudeE6());
-		((TextView) findViewById(R.id.point_info_desc_content)).setText((String)item.get("desc"));
+		((TextView) findViewById(R.id.point_info_title)).setText((String)item.get("title"));
+		((TextView) findViewById(R.id.point_info_desc)).setText((String)item.get("desc"));
 		
 		setMenuMode(MenuMode.SELECTED);
 	}
@@ -253,9 +259,11 @@ public class TheOrienteer extends MapActivity {
     	else {
     		addMode = mode == MenuMode.ADDMODE;
     		options.findItem(R.id.add).setVisible(mode == MenuMode.DESELECTED);
-    		options.findItem(R.id.OK).setVisible(mode == MenuMode.SELECTED);
-    		options.findItem(R.id.cancel).setVisible(mode != MenuMode.DESELECTED);
-    		options.findItem(R.id.remove).setVisible(mode == MenuMode.SELECTED);
+    		options.findItem(R.id.OK).setVisible(mode == MenuMode.SELECTED || mode == MenuMode.ADDED);
+    		options.findItem(R.id.cancel).setVisible(mode == MenuMode.ADDMODE && mode == MenuMode.SELECTED);
+    		options.findItem(R.id.up).setVisible(mode == MenuMode.SELECTED || mode == MenuMode.ADDED);
+    		options.findItem(R.id.down).setVisible(mode == MenuMode.SELECTED || mode == MenuMode.ADDED);
+    		options.findItem(R.id.remove).setVisible(mode == MenuMode.SELECTED || mode == MenuMode.ADDED);
     	}
 	}
 

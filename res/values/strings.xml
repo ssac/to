@@ -21,9 +21,7 @@
     <string name="point_list_save">Save</string>
     <string name="app_name">The Orienteer</string>
     <string name="point_info_title">Title:</string>
-    <string name="point_info_coordinate">Coordinate:</string>
     <string name="point_info_desc">Description:</string>
-    <string name="timer_default_time">00:00</string>
     
     <string name="user_mode">User Mode</string>
     <string name="admin_mode">Admin Mode</string>
@@ -31,6 +29,8 @@
     <string name="remove">Remove</string>
     <string name="OK">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="up">Up</string>
+    <string name="down">Down</string>
     <string name="start">Start</string>
     <string name="review">Review</string>
     <string name="checkin">Check In</string>

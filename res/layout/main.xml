@@ -2,141 +2,90 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    >
-  
-    <LinearLayout
-        android:id="@+id/map"
+    android:orientation="horizontal" >
+
+    <com.google.android.maps.MapView
+        android:id="@+id/mapview"
         android:layout_width="880dp"
         android:layout_height="match_parent"
-        android:orientation="vertical" 
-        android:paddingRight="5dp"
-        >
-        
-        <com.google.android.maps.MapView
-	        android:id="@+id/mapview"
-	        android:layout_width="match_parent" 
-	        android:layout_height="match_parent"
-	        android:state_enabled="true"
-	        android:clickable="true"
-	        android:apiKey="@string/maps_api_key"
-	    />
-        
-    </LinearLayout>
+        android:apiKey="@string/maps_api_key"
+        android:clickable="true"
+        android:state_enabled="true" />
 
     <LinearLayout
-        android:id="@+id/controller"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" 
-        >
-        
-        <LinearLayout
-            android:id="@+id/timer"
+        android:layout_marginLeft="10dp"
+        android:orientation="vertical" >
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:orientation="horizontal"
+            android:layout_height="wrap_content"
             android:background="@drawable/the_border"
-            android:layout_margin="5dp"
-            >
-            
+            android:gravity="center" >
+
             <TextView
-            	android:id="@+id/timer_text"
-            	android:textSize="35sp"
-            	android:layout_width="match_parent"
-            	android:layout_height="wrap_content"
-            	android:text="00:12"
-            	>
-            </TextView>
-            
-        </LinearLayout>
-        
-        <LinearLayout 
-            android:id="@+id/point_list"
-            android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:orientation="vertical" 
-            android:background="@drawable/the_border"
-            android:layout_margin="5dp"
-            >
-            
-            <ListView
+                android:id="@+id/timer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/point_list_listview" 
-                android:choiceMode="singleChoice"
-                >
-            </ListView>
-            
-        </LinearLayout>
-        
-        <LinearLayout 
-            android:id="@+id/point_info"
-            android:visibility="invisible"
+                android:gravity="center"
+                android:text="00:12"
+                android:textSize="35sp" >
+            </TextView>
+        </RelativeLayout>
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" 
-            android:background="@drawable/the_border"
-            android:layout_margin="5dp"
-            >
-            
-            <TextView
-            	android:id="@+id/point_info_title"
-            	android:textSize="15sp"
-            	android:layout_width="match_parent"
-            	android:layout_height="wrap_content"
-            	android:text="@string/point_info_title"
-            	>
-            </TextView>
-            
-            <TextView
-            	android:id="@+id/point_info_title_content"
-            	android:textSize="15sp"
-            	android:layout_width="match_parent"
-            	android:layout_height="wrap_content"
-            	android:paddingLeft="10dp"
-            	>
-            </TextView>
-            
-            <TextView
-            	android:id="@+id/point_info_coordinate"
-            	android:textSize="15sp"
-            	android:layout_width="match_parent"
-            	android:layout_height="wrap_content"
-            	android:text="@string/point_info_coordinate"
-            	>
-            </TextView>
-            
-            <TextView
-		        android:id="@+id/point_info_coordinate_content"
-		        android:textSize="15sp"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:paddingLeft="10dp"
-		        >
-		    </TextView>
-		    
-		    <TextView
-            	android:id="@+id/point_info_desc"
-            	android:textSize="15sp"
-            	android:layout_width="match_parent"
-            	android:layout_height="wrap_content"
-            	android:text="@string/point_info_desc"
-            	>
-            </TextView>
-            
-            <EditText
-		        android:id="@+id/point_info_desc_content"
-		        android:textSize="15sp"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:inputType="textMultiLine" 
-		        >
+            android:layout_height="0dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="2"
+            android:background="@drawable/the_border" >
 
-		    </EditText>
-		    
-        </LinearLayout>
+            <ListView
+                android:id="@+id/point_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:choiceMode="singleChoice" >
+            </ListView>
+        </RelativeLayout>
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@drawable/the_border" >
+
+            <LinearLayout
+                android:id="@+id/point_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="invisible" >
+
+                <TextView
+                    style="@style/info_text"
+                    android:text="@string/point_info_title" >
+                </TextView>
+
+                <EditText
+                    android:id="@+id/point_info_title"
+                    style="@style/info_text"
+                    android:inputType="text" >
+                </EditText>
+
+                <TextView
+                    style="@style/info_text"
+                    android:text="@string/point_info_desc" >
+                </TextView>
+
+                <EditText
+                    android:id="@+id/point_info_desc"
+                    style="@style/info_text"
+                    android:inputType="textMultiLine" >
+                </EditText>
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
-    
+
 </LinearLayout>

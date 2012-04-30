@@ -10,6 +10,8 @@
        		<item android:id="@+id/add" android:title="@string/add" android:showAsAction="always"></item>
        		<item android:id="@+id/OK" android:title="@string/OK" android:showAsAction="always" android:visible="false"></item>
        		<item android:id="@+id/cancel" android:title="@string/cancel" android:showAsAction="always" android:visible="false"></item>
+       		<item android:id="@+id/up" android:title="@string/up" android:showAsAction="always" android:visible="false"></item>
+       		<item android:id="@+id/down" android:title="@string/down" android:showAsAction="always" android:visible="false"></item>
        		<item android:id="@+id/remove" android:title="@string/remove" android:showAsAction="always" android:visible="false"></item>
         	<item android:id="@+id/user_mode" android:title="@string/user_mode"></item>
         	<item android:id="@+id/cfg_import" android:title="@string/cfg_import"></item>
