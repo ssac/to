@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+    <TextView 
+	    android:text="@string/review_review"
+	    android:gravity="center"
+	    android:padding="10dip"
+	    />
+    
+    <View 
+    	android:layout_height="2dip"
+    	android:background="#FF909090"
+    	/>
+    
+    <TableRow>
+        
+        <TextView
+             android:text="CheckPoint"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:gravity="center"
+            />
+        
+        <TextView
+			android:text="Reach Time"
+			android:gravity="left"
+			android:padding="20dip"
+            />
+        
+        <TextView
+            android:text="Time Cost"
+            android:gravity="left"
+            />
+        
+    </TableRow>
+
+</TableLayout>
