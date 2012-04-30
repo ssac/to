@@ -26,12 +26,14 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
+import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -53,6 +55,7 @@ public class TheOrienteer extends MapActivity {
 	List<Map<String, Object>> checkpoints = new ArrayList<Map<String, Object>>();
 	MapView mapView;
 	CheckpointItemizedOverlay overlay;
+	MyLocationOverlay mlo;
 	SimpleAdapter adapter;
 	ListView list;
 	Menu options;
@@ -68,12 +71,28 @@ public class TheOrienteer extends MapActivity {
 
         mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
-        mapView.getController().setCenter(new GeoPoint(22337505,114262968));
+        //mapView.getController().setCenter(new GeoPoint(22337505,114262968));
         mapView.getController().setZoom(18);
         
         initOverlay();
         initListView();
     }
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		
+        mlo.disableMyLocation();
+        mlo.disableCompass();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+        mlo.enableMyLocation();
+        mlo.enableCompass();
+	}
 
 	@Override
 	protected boolean isRouteDisplayed() {
@@ -149,6 +168,14 @@ public class TheOrienteer extends MapActivity {
 				return super.onTouchEvent(e, mapView);
 			}
         });
+        
+        mlo = new MyLocationOverlay(this, mapView);
+        mlo.runOnFirstFix(new Runnable() {
+			public void run() {
+				mapView.getController().animateTo(mlo.getMyLocation());
+			}
+        });
+        mapView.getOverlays().add(mlo);
 	}
 	
 	void initListView() {
@@ -174,6 +201,10 @@ public class TheOrienteer extends MapActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
+	    	case R.id.my_location:
+	    		Location fix = mlo.getLastFix();
+	    		if(fix != null) mapView.getController().animateTo(new GeoPoint((int)(fix.getLatitude() * 1E6), (int)(fix.getLongitude() * 1E6)));
+	    		return true;
 	        case R.id.admin_mode:
 	        	setMenuMode(MenuMode.DESELECTED);
 	            return true;
@@ -235,7 +266,6 @@ public class TheOrienteer extends MapActivity {
 		list.setItemChecked(index, true);
 		
 		Map<String, Object> item = checkpoints.get(index);
-		GeoPoint point = ((OverlayItem)item.get("overlayItem")).getPoint();
 
 		((TextView) findViewById(R.id.point_info_title)).setText((String)item.get("title"));
 		((TextView) findViewById(R.id.point_info_desc)).setText((String)item.get("desc"));

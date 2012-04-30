@@ -23,6 +23,7 @@
     <string name="point_info_title">Title:</string>
     <string name="point_info_desc">Description:</string>
     
+    <string name="my_location">My Location</string>
     <string name="user_mode">User Mode</string>
     <string name="admin_mode">Admin Mode</string>
     <string name="add">Add</string>
