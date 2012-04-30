@@ -18,20 +18,20 @@
     <TableRow>
         
         <TextView
-             android:text="CheckPoint"
+             android:text="@string/review_check_point"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
              android:gravity="center"
             />
         
         <TextView
-			android:text="Reach Time"
+			android:text="@string/review_reach_time"
 			android:gravity="left"
 			android:padding="20dip"
             />
         
         <TextView
-            android:text="Time Cost"
+            android:text="@string/review_time_cost"
             android:gravity="left"
             />
         

@@ -37,5 +37,10 @@
     <string name="checkin">Check In</string>
     <string name="cfg_import">Import Config</string>
     <string name="cfg_export">Export Config</string>
+    
+    <string name="review_review">Review</string>
+    <string name="review_check_point">Check Point</string>
+    <string name="review_reach_time">Reach Time</string>
+    <string name="review_time_cost">Time Cost</string>
 </resources>
 
