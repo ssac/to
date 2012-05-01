@@ -67,7 +67,7 @@ public class TheOrienteer extends MapActivity {
 	long startTime;
 	
 	enum MenuMode {
-		STOPPED, STARTED, ADDMODE, ADDED, SELECTED, DESELECTED
+		STOPPED, STARTED, ADDMODE, SELECTED, DESELECTED
 	}
 	
 	MenuMode currentMode = MenuMode.STOPPED;
@@ -161,9 +161,7 @@ public class TheOrienteer extends MapActivity {
 	    			overlays.add(overlay);
 	    		}
 	    		
-	    		setMenuMode(MenuMode.ADDED);
-	    		
-	    		return false;
+	    		return true;
         	}
         });
         
@@ -301,6 +299,7 @@ public class TheOrienteer extends MapActivity {
 	        	
 	            return true;
 	        case R.id.review:
+	        	showDialog(DIALOG_REVIEW);
 	            return true;
 	        case R.id.cfg_import:
 	            return true;
@@ -319,6 +318,8 @@ public class TheOrienteer extends MapActivity {
 
 		((TextView) findViewById(R.id.point_info_title)).setText((String)item.get("title"));
 		((TextView) findViewById(R.id.point_info_desc)).setText((String)item.get("desc"));
+
+		findViewById(R.id.point_info).setVisibility(View.VISIBLE);
 		
 		if(!isUserMode) setMenuMode(MenuMode.SELECTED);
 	}
@@ -331,7 +332,10 @@ public class TheOrienteer extends MapActivity {
     	options.setGroupVisible(R.id.user_group, isUserMode);
     	
     	findViewById(R.id.timer_container).setVisibility(isUserMode ? View.VISIBLE : View.GONE);
-		findViewById(R.id.point_info).setVisibility(EnumSet.of(MenuMode.DESELECTED, MenuMode.ADDMODE).contains(mode) ? View.INVISIBLE : View.VISIBLE);
+		
+    	if(EnumSet.of(MenuMode.STOPPED, MenuMode.ADDMODE, MenuMode.DESELECTED).contains(mode)) {
+    		findViewById(R.id.point_info).setVisibility(View.INVISIBLE);
+    	}
     	
     	if(isUserMode) {
     		options.findItem(R.id.start).setVisible(mode == MenuMode.STOPPED);
@@ -340,11 +344,11 @@ public class TheOrienteer extends MapActivity {
     	}
     	else {
     		options.findItem(R.id.add).setVisible(mode == MenuMode.DESELECTED);
-    		options.findItem(R.id.OK).setVisible(mode == MenuMode.SELECTED || mode == MenuMode.ADDED);
-    		options.findItem(R.id.cancel).setVisible(mode == MenuMode.ADDMODE && mode == MenuMode.SELECTED);
-    		options.findItem(R.id.up).setVisible(mode == MenuMode.SELECTED || mode == MenuMode.ADDED);
-    		options.findItem(R.id.down).setVisible(mode == MenuMode.SELECTED || mode == MenuMode.ADDED);
-    		options.findItem(R.id.remove).setVisible(mode == MenuMode.SELECTED || mode == MenuMode.ADDED);
+    		options.findItem(R.id.OK).setVisible(mode == MenuMode.SELECTED);
+    		options.findItem(R.id.cancel).setVisible(mode == MenuMode.ADDMODE || mode == MenuMode.SELECTED);
+    		options.findItem(R.id.up).setVisible(mode == MenuMode.SELECTED);
+    		options.findItem(R.id.down).setVisible(mode == MenuMode.SELECTED);
+    		options.findItem(R.id.remove).setVisible(mode == MenuMode.SELECTED);
     	}
 	}
 	
@@ -374,7 +378,7 @@ public class TheOrienteer extends MapActivity {
 		
 		switch(id) {
 			case DIALOG_REVIEW:
-				dialog = new Dialog(getApplicationContext());
+				dialog = new Dialog(this);
 				dialog.setContentView(R.layout.review);
 				dialog.setTitle("Review");
 				TableLayout table = (TableLayout) dialog.findViewById(R.id.review_table);
