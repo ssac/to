@@ -276,7 +276,7 @@ public class TheOrienteer extends MapActivity {
 	        	Location cur = mlo.getLastFix();
 	        	
 	        	if(cur == null) {
-	    			Toast.makeText(getApplicationContext(), "Unable to retrieve your location.", 1000);
+	    			Toast.makeText(getApplicationContext(), "Unable to retrieve your location.", 1000).show();
 	    			return true;
 	        	}
 
@@ -293,7 +293,7 @@ public class TheOrienteer extends MapActivity {
 	        	else {
 	        		text = "Check-in failed! Please make sure you are close enough to the next control point.";
 	        	}
-	        	Toast.makeText(getApplicationContext(), text, 1000);
+	        	Toast.makeText(getApplicationContext(), text, 1000).show();
 	        	
 	        	if(nextIndex == checkpoints.size()) {
 	        		
