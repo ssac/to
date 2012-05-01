@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ffffff"
     android:orientation="horizontal" >
 
     <com.google.android.maps.MapView
@@ -16,22 +17,39 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:orientation="vertical" >
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/the_border"
-            android:gravity="center" >
+        >
+            
+            <ImageView
+                android:id="@+id/imgClock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+				android:layout_toLeftOf="@+id/timer"
+				android:layout_marginRight="5dp"
+                android:layout_centerInParent="true"
+                android:gravity="left"
+                android:src="@drawable/clock" />
 
             <TextView
+                style="@style/themeFont"
                 android:id="@+id/timer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:gravity="center"
                 android:text="00:12"
+                android:textColor="#000000"
                 android:textSize="35sp" >
             </TextView>
+
         </RelativeLayout>
 
         <RelativeLayout
@@ -44,6 +62,7 @@
 
             <ListView
                 android:id="@+id/point_list"
+                style="@style/info_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:choiceMode="singleChoice" >
