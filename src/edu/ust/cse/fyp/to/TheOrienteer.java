@@ -29,14 +29,12 @@ import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateUtils;
-import android.text.format.Time;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -151,7 +149,9 @@ public class TheOrienteer extends MapActivity {
 	    		List<Overlay> overlays = mapView.getOverlays();
 
 	    		Map<String, Object> cp = new HashMap<String, Object>();
-	    		cp.put("overlayItem", new OverlayItem(mapView.getProjection().fromPixels((int)event.getX(), (int)event.getY()), "Checkpoint " + ++uid, ""));
+	    		cp.put("title", "Checkpoint " + ++uid);
+	    		cp.put("desc", "");
+	    		cp.put("overlayItem", new OverlayItem(mapView.getProjection().fromPixels((int)event.getX(), (int)event.getY()), "", ""));
 	    		
 	    		checkpoints.add(cp);
 	    		overlay.update();
@@ -393,7 +393,7 @@ public class TheOrienteer extends MapActivity {
 						TextView tv = (TextView) row.getVirtualChildAt(0);
 						switch(j) {
 							case 0:
-								tv.setText(((OverlayItem)cp.get("overlayItem")).getTitle());
+								tv.setText((String)cp.get("title"));
 								break;
 							case 1:
 								tv.setText(DateUtils.formatElapsedTime(reachTime - startTime));
