@@ -43,10 +43,11 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -55,13 +56,13 @@ import android.widget.Toast;
 public class TheOrienteer extends MapActivity {
 
 	int uid = 0;
-	int selectedIndex;
-	int nextIndex;
+	int selectedIndex = 0;
+	int nextIndex = 0;
 	List<Map<String, Object>> checkpoints = new ArrayList<Map<String, Object>>();
 	MapView mapView;
 	CheckpointItemizedOverlay overlay;
 	MyLocationOverlay mlo;
-	SimpleAdapter adapter;
+	CheckpointListAdapter adapter;
 	ListView list;
 	Menu options;
 	long startTime;
@@ -71,7 +72,9 @@ public class TheOrienteer extends MapActivity {
 	}
 	
 	MenuMode currentMode = MenuMode.STOPPED;
-	boolean isUserMode;
+	boolean isUserMode = true;
+	
+	final int DIALOG_REVIEW = 0;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -109,94 +112,6 @@ public class TheOrienteer extends MapActivity {
 		return false;
 	}
 	
-	class CheckpointItemizedOverlay extends ItemizedOverlay<OverlayItem> {
-
-		public CheckpointItemizedOverlay(Drawable defaultMarker) {
-			super(boundCenter(defaultMarker));
-		}
-
-		@Override
-		protected OverlayItem createItem(int i) {
-			return (OverlayItem) checkpoints.get(i).get("overlayItem");
-		}
-
-		@Override
-		public int size() {
-			return checkpoints.size();
-		}
-		
-		public void update() {
-		    populate();
-		    setLastFocusedIndex(-1);
-		    mapView.invalidate();
-		}
-
-		@Override
-		protected boolean onTap(int index) {
-			super.onTap(index);
-			selectCheckpoint(index);						
-			return true;
-		}
-	}
-	
-	void initOverlay() {
-		overlay = new CheckpointItemizedOverlay(this.getResources().getDrawable(R.drawable.androidmarker));
-        
-        final GestureDetector detector = new GestureDetector(this, new SimpleOnGestureListener() {
-        	
-        	@Override
-        	public boolean onSingleTapUp(MotionEvent event) {
-	    		List<Overlay> overlays = mapView.getOverlays();
-
-	    		Map<String, Object> cp = new HashMap<String, Object>();
-	    		cp.put("title", "Checkpoint " + ++uid);
-	    		cp.put("desc", "");
-	    		cp.put("overlayItem", new OverlayItem(mapView.getProjection().fromPixels((int)event.getX(), (int)event.getY()), "", ""));
-	    		
-	    		checkpoints.add(cp);
-	    		overlay.update();
-	    		list.setAdapter(adapter);
-	    		
-	    		if(!overlays.contains(overlay)) {
-	    			overlays.add(overlay);
-	    		}
-	    		
-	    		return true;
-        	}
-        });
-        
-        mapView.getOverlays().add(new Overlay() {
-
-			@Override
-			public boolean onTouchEvent(MotionEvent e, MapView mapView) {
-				if(currentMode == MenuMode.ADDMODE) {
-					detector.onTouchEvent(e);
-				}
-				
-				return super.onTouchEvent(e, mapView);
-			}
-        });
-        
-        mlo = new MyLocationOverlay(this, mapView);
-        mlo.runOnFirstFix(new Runnable() {
-			public void run() {
-				mapView.getController().animateTo(mlo.getMyLocation());
-			}
-        });
-        mapView.getOverlays().add(mlo);
-	}
-	
-	void initListView() {
-		adapter = new SimpleAdapter(this, checkpoints, R.layout.list_item, new String[] { "title" }, new int[] { R.id.item_title });
-		list = (ListView) findViewById(R.id.point_list);
-		
-		list.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				selectCheckpoint(position);
-			}
-		});
-	}
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
@@ -212,7 +127,7 @@ public class TheOrienteer extends MapActivity {
 	    	case R.id.my_location:
 	    		GeoPoint point = mlo.getMyLocation();
 	    		if(point == null) {
-	    			Toast.makeText(getApplicationContext(), "Unable to retrieve your location.", 1000);
+	    			Toast.makeText(getApplicationContext(), "Unable to retrieve your location.", Toast.LENGTH_SHORT);
 	    		}
 	    		else {
 	    			mapView.getController().animateTo(point);
@@ -248,6 +163,7 @@ public class TheOrienteer extends MapActivity {
 	        	Map<String, Object> cp = checkpoints.remove(selectedIndex);
 	        	selectedIndex = item.getItemId() == R.id.up ? selectedIndex - 1 : selectedIndex + 1;
 	        	checkpoints.add(selectedIndex, cp);
+	        	overlay.update();
 				list.setAdapter(adapter);
 				selectCheckpoint(selectedIndex);
 	            return true;
@@ -259,7 +175,7 @@ public class TheOrienteer extends MapActivity {
 	            return true;
 	        case R.id.start:
 	        	if(checkpoints.size() == 0) {
-	        		Toast.makeText(getApplicationContext(), "Cannot start with 0 control points!", 1000).show();
+	        		Toast.makeText(getApplicationContext(), "Cannot start with 0 control points!", Toast.LENGTH_SHORT).show();
 	        		return true;
 	        	}
 	        	
@@ -274,7 +190,7 @@ public class TheOrienteer extends MapActivity {
 	        	Location cur = mlo.getLastFix();
 	        	
 	        	if(cur == null) {
-	    			Toast.makeText(getApplicationContext(), "Unable to retrieve your location.", 1000).show();
+	    			Toast.makeText(getApplicationContext(), "Unable to retrieve your location.", Toast.LENGTH_SHORT).show();
 	    			return true;
 	        	}
 
@@ -287,14 +203,16 @@ public class TheOrienteer extends MapActivity {
 	        		text = "Check-in success!";
 	        		checkpoints.get(nextIndex).put("reachTime", System.currentTimeMillis());
 	        		nextIndex++;
+	        		list.setAdapter(adapter);
 	        	}
 	        	else {
 	        		text = "Check-in failed! Please make sure you are close enough to the next control point.";
 	        	}
-	        	Toast.makeText(getApplicationContext(), text, 1000).show();
+	        	Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
 	        	
 	        	if(nextIndex == checkpoints.size()) {
-	        		
+		        	showDialog(DIALOG_REVIEW);
+	        		setMenuMode(MenuMode.STOPPED);
 	        	}
 	        	
 	            return true;
@@ -309,68 +227,6 @@ public class TheOrienteer extends MapActivity {
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
-	
-	void selectCheckpoint(int index) {
-		selectedIndex = index;
-		list.setItemChecked(index, true);
-		
-		Map<String, Object> item = checkpoints.get(index);
-
-		((TextView) findViewById(R.id.point_info_title)).setText((String)item.get("title"));
-		((TextView) findViewById(R.id.point_info_desc)).setText((String)item.get("desc"));
-
-		findViewById(R.id.point_info).setVisibility(View.VISIBLE);
-		
-		if(!isUserMode) setMenuMode(MenuMode.SELECTED);
-	}
-	
-	void setMenuMode(MenuMode mode) {
-		currentMode = mode;
-		isUserMode = EnumSet.of(MenuMode.STOPPED, MenuMode.STARTED).contains(mode);
-		
-    	options.setGroupVisible(R.id.admin_group, !isUserMode);
-    	options.setGroupVisible(R.id.user_group, isUserMode);
-    	
-    	findViewById(R.id.timer_container).setVisibility(isUserMode ? View.VISIBLE : View.GONE);
-		
-    	if(EnumSet.of(MenuMode.STOPPED, MenuMode.ADDMODE, MenuMode.DESELECTED).contains(mode)) {
-    		findViewById(R.id.point_info).setVisibility(View.INVISIBLE);
-    	}
-    	
-    	if(isUserMode) {
-    		options.findItem(R.id.start).setVisible(mode == MenuMode.STOPPED);
-    		options.findItem(R.id.checkin).setVisible(mode == MenuMode.STARTED);
-    		options.findItem(R.id.review).setVisible(mode == MenuMode.STARTED);
-    	}
-    	else {
-    		options.findItem(R.id.add).setVisible(mode == MenuMode.DESELECTED);
-    		options.findItem(R.id.OK).setVisible(mode == MenuMode.SELECTED);
-    		options.findItem(R.id.cancel).setVisible(mode == MenuMode.ADDMODE || mode == MenuMode.SELECTED);
-    		options.findItem(R.id.up).setVisible(mode == MenuMode.SELECTED);
-    		options.findItem(R.id.down).setVisible(mode == MenuMode.SELECTED);
-    		options.findItem(R.id.remove).setVisible(mode == MenuMode.SELECTED);
-    	}
-	}
-	
-	Handler timerHandler = new Handler();
-	Runnable timerRunner = new Runnable() {
-		public void run() {
-			((TextView) findViewById(R.id.timer)).setText(DateUtils.formatElapsedTime((System.currentTimeMillis() - startTime) / 1000));
-			timerHandler.postDelayed(this, 1000);
-		}
-	};
-	
-	void setTimer(boolean enabled) {
-		timerHandler.removeCallbacks(timerRunner);
-		((TextView) findViewById(R.id.timer)).setText("00:00");
-		
-		if(enabled) {
-			startTime = System.currentTimeMillis();
-			timerHandler.postDelayed(timerRunner, 1000);
-		}
-	}
-	
-	final int DIALOG_REVIEW = 0;
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -380,7 +236,7 @@ public class TheOrienteer extends MapActivity {
 			case DIALOG_REVIEW:
 				dialog = new Dialog(this);
 				dialog.setContentView(R.layout.review);
-				dialog.setTitle("Review");
+				dialog.setTitle(nextIndex == checkpoints.size() ? "Game Complete!" : "Review");
 				TableLayout table = (TableLayout) dialog.findViewById(R.id.review_table);
 				
 				LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -416,5 +272,191 @@ public class TheOrienteer extends MapActivity {
 		}
 		
 		return dialog;
+	}
+	
+	class CheckpointItemizedOverlay extends ItemizedOverlay<OverlayItem> {
+
+		public CheckpointItemizedOverlay(Drawable defaultMarker) {
+			super(boundCenter(defaultMarker));
+		}
+
+		@Override
+		protected OverlayItem createItem(int i) {
+			OverlayItem item = (OverlayItem) checkpoints.get(i).get("overlayItem");
+			item.setMarker(boundCenter(CheckpointDrawableFactory.create(getResources(), i + 1, false)));
+			return item;
+		}
+
+		@Override
+		public int size() {
+			return checkpoints.size();
+		}
+		
+		public void update() {
+		    populate();
+		    setLastFocusedIndex(-1);
+		    mapView.invalidate();
+		}
+
+		@Override
+		protected boolean onTap(int index) {
+			super.onTap(index);
+			selectCheckpoint(index);						
+			return true;
+		}
+	}
+	
+	void initOverlay() {
+		overlay = new CheckpointItemizedOverlay(this.getResources().getDrawable(R.drawable.androidmarker));
+        
+        final GestureDetector detector = new GestureDetector(this, new SimpleOnGestureListener() {
+        	
+        	@Override
+        	public boolean onSingleTapUp(MotionEvent event) {
+        		addCheckpoint(mapView.getProjection().fromPixels((int)event.getX(), (int)event.getY()));
+	    		return true;
+        	}
+        });
+        
+        mapView.getOverlays().add(new Overlay() {
+
+			@Override
+			public boolean onTouchEvent(MotionEvent e, MapView mapView) {
+				if(currentMode == MenuMode.ADDMODE) {
+					detector.onTouchEvent(e);
+				}
+				
+				return super.onTouchEvent(e, mapView);
+			}
+        });
+        
+        mlo = new MyLocationOverlay(this, mapView);
+        mlo.runOnFirstFix(new Runnable() {
+			public void run() {
+				mapView.getController().animateTo(mlo.getMyLocation());
+			}
+        });
+        mapView.getOverlays().add(mlo);
+	}
+	
+	void initListView() {
+		adapter = new CheckpointListAdapter(this, checkpoints);
+		list = (ListView) findViewById(R.id.point_list);
+		
+		list.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				selectCheckpoint(position);
+			}
+		});
+	}
+	
+	void addCheckpoint(GeoPoint point) {
+		List<Overlay> overlays = mapView.getOverlays();
+
+		Map<String, Object> cp = new HashMap<String, Object>();
+		cp.put("title", "Checkpoint " + ++uid);
+		cp.put("desc", "");
+		cp.put("overlayItem", new OverlayItem(point, "", ""));
+		
+		checkpoints.add(cp);
+		overlay.update();
+		list.setAdapter(adapter);
+		
+		if(!overlays.contains(overlay)) {
+			overlays.add(overlay);
+		}
+	}
+	
+	void selectCheckpoint(int index) {
+		selectedIndex = index;
+		list.setItemChecked(index, true);
+		list.setSelection(index);
+		
+		Map<String, Object> item = checkpoints.get(index);
+
+		((TextView) findViewById(R.id.point_info_title)).setText((String)item.get("title"));
+		((TextView) findViewById(R.id.point_info_desc)).setText((String)item.get("desc"));
+
+		findViewById(R.id.point_info).setVisibility(View.VISIBLE);
+		
+		if(!isUserMode) setMenuMode(MenuMode.SELECTED);
+	}
+	
+	void setMenuMode(MenuMode mode) {
+		currentMode = mode;
+		boolean isLastUserMode = isUserMode;
+		isUserMode = EnumSet.of(MenuMode.STOPPED, MenuMode.STARTED).contains(mode);
+		
+    	options.setGroupVisible(R.id.admin_group, !isUserMode);
+    	options.setGroupVisible(R.id.user_group, isUserMode);
+    	
+    	findViewById(R.id.timer_container).setVisibility(isUserMode ? View.VISIBLE : View.GONE);
+		
+    	if(EnumSet.of(MenuMode.STOPPED, MenuMode.ADDMODE, MenuMode.DESELECTED).contains(mode)) {
+    		findViewById(R.id.point_info).setVisibility(View.INVISIBLE);
+    	}
+    	
+    	if(isLastUserMode != isUserMode) {
+	    	ViewGroup info = (ViewGroup) findViewById(R.id.point_info);
+	    	for(int i=0; i<info.getChildCount(); i++) {
+	    		View view = info.getChildAt(i);
+	    		if(view instanceof EditText) {
+	    			if(isUserMode) {
+	    				view.setFocusable(false);
+	    			}
+	    			else {
+	    				view.setFocusableInTouchMode(true);
+	    			}
+	    		}
+	    	}
+    	}
+    	
+    	if(isUserMode) {
+    		options.findItem(R.id.start).setVisible(mode == MenuMode.STOPPED);
+    		options.findItem(R.id.checkin).setVisible(mode == MenuMode.STARTED);
+    		options.findItem(R.id.review).setVisible(mode == MenuMode.STARTED);
+    	}
+    	else {
+    		options.findItem(R.id.add).setVisible(mode == MenuMode.DESELECTED);
+    		options.findItem(R.id.OK).setVisible(mode == MenuMode.SELECTED);
+    		options.findItem(R.id.cancel).setVisible(mode == MenuMode.ADDMODE || mode == MenuMode.SELECTED);
+    		options.findItem(R.id.up).setVisible(mode == MenuMode.SELECTED);
+    		options.findItem(R.id.down).setVisible(mode == MenuMode.SELECTED);
+    		options.findItem(R.id.remove).setVisible(mode == MenuMode.SELECTED);
+    	}
+	}
+	
+	Handler timerHandler = new Handler();
+	Runnable timerRunner = new Runnable() {
+		public void run() {
+			((TextView) findViewById(R.id.timer)).setText(DateUtils.formatElapsedTime((System.currentTimeMillis() - startTime) / 1000));
+			timerHandler.postDelayed(this, 1000);
+		}
+	};
+	
+	void setTimer(boolean enabled) {
+		timerHandler.removeCallbacks(timerRunner);
+		((TextView) findViewById(R.id.timer)).setText("00:00");
+		
+		if(enabled) {
+			startTime = System.currentTimeMillis();
+			timerHandler.postDelayed(timerRunner, 1000);
+		}
+	}
+	
+	public boolean isUserMode() {
+		return isUserMode;
+	}
+	
+	public int getNextIndex() {
+		return nextIndex;
+	}
+	
+	public int getSelectedIndex() {
+		return selectedIndex;
+	}
+	
+	public MenuMode getMenuMode() {
+		return currentMode;
 	}
 }

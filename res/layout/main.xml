@@ -7,6 +7,7 @@
 
     <com.google.android.maps.MapView
         android:id="@+id/mapview"
+        style="@style/info_text"
         android:layout_width="880dp"
         android:layout_height="match_parent"
         android:apiKey="@string/maps_api_key"
@@ -19,22 +20,28 @@
         android:layout_marginLeft="10dp"
         android:orientation="vertical" >
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/timer_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:background="@drawable/the_border"
-            android:gravity="center" >
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="35sp"
+                android:layout_height="35sp"
+                android:src="@android:drawable/ic_menu_recent_history" />
 
             <TextView
                 android:id="@+id/timer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:typeface="monospace"
                 android:textSize="35sp" >
             </TextView>
-        </RelativeLayout>
+        </LinearLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -62,6 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:padding="10dp"
                 android:visibility="invisible" >
 
                 <TextView
