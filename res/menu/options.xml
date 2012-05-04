@@ -10,8 +10,8 @@
     	<item android:id="@+id/admin_mode" android:title="@string/admin_mode"></item>
     </group>
     <group android:id="@+id/admin_group" android:visible="false">
-   		<item android:id="@+id/up" android:title="@string/up" android:showAsAction="always|withText" android:visible="false"></item>
-   		<item android:id="@+id/down" android:title="@string/down" android:showAsAction="always|withText" android:visible="false"></item>
+   		<item android:id="@+id/up" android:title="@string/up" android:showAsAction="always|withText" android:icon="@drawable/up" android:visible="false"></item>
+   		<item android:id="@+id/down" android:title="@string/down" android:showAsAction="always|withText" android:icon="@drawable/down" android:visible="false"></item>
    		<item android:id="@+id/remove" android:title="@string/remove" android:icon="@android:drawable/ic_menu_delete" android:showAsAction="always|withText" android:visible="false"></item>
    		<item android:id="@+id/add" android:title="@string/add" android:icon="@android:drawable/ic_menu_add" android:showAsAction="always|withText"></item>
    		<item android:id="@+id/OK" android:title="@string/OK" android:icon="@android:drawable/ic_menu_save" android:showAsAction="always|withText" android:visible="false"></item>
