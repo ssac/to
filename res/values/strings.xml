@@ -35,6 +35,7 @@
     <string name="start">Start</string>
     <string name="review">Review</string>
     <string name="checkin">Check In</string>
+    <string name="set_password">Set Password</string>
     <string name="cfg_import">Import Config</string>
     <string name="cfg_export">Export Config</string>
     

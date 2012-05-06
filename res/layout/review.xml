@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/review_table"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
 
-    <TableRow>
+    <TableLayout
+        android:id="@+id/review_table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
 
-        <TextView
-            style="@style/review_table_row"
-            android:text="@string/review_check_point" 
-        />
+        <TableRow style="@style/review_table_row" >
 
-        <TextView
-            style="@style/review_table_row"
-            android:text="@string/review_reach_time" 
-        />
+            <TextView
+                style="@style/review_table_row_text"
+                android:text="@string/review_check_point" />
 
-        <TextView
-            style="@style/review_table_row"
-            android:text="@string/review_time_cost" 
-        />
-        
-    </TableRow>
+            <TextView
+                style="@style/review_table_row_text"
+                android:text="@string/review_reach_time" />
 
-</TableLayout>
+            <TextView
+                style="@style/review_table_row_text"
+                android:text="@string/review_time_cost" />
+        </TableRow>
+    </TableLayout>
+
+</ScrollView>

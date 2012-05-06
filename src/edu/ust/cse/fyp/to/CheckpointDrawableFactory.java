@@ -21,11 +21,13 @@ public class CheckpointDrawableFactory {
 		p.setColor(current ? 0xFFCC3535 : 0xFF35CC49);
 		c.drawCircle(30, 30, 13, p);
 		
-		p.setTextSize(16);
-		p.setFakeBoldText(true);
-		p.setTextAlign(Paint.Align.CENTER);
-		p.setColor(Color.BLACK);
-		c.drawText(num + "", 30, 35, p);
+		if(num != -1) {
+			p.setTextSize(16);
+			p.setFakeBoldText(true);
+			p.setTextAlign(Paint.Align.CENTER);
+			p.setColor(Color.BLACK);
+			c.drawText(num + "", 30, 35, p);
+		}
 		
 		return new BitmapDrawable(res, b);
 	}
